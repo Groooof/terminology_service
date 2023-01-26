@@ -16,7 +16,6 @@ from . import crud
 class DirectoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'code', 'name', 'latest_version', 'latest_version_start_date')
     list_display_links = ('id', 'name', 'code')
-    search_fields = ('name',)
     
     @admin.display(description='Текущая версия')
     def latest_version(self, obj: Directory) -> str:
@@ -32,6 +31,19 @@ class DirectoryAdmin(admin.ModelAdmin):
         return crud.get_latest_directory_version(obj)
 
 
+class DirectoryVersionAdmin(admin.ModelAdmin):
+    list_display = ('directory_code', 'directory_name', 'version', 'start_date')
+    list_display_links = ('version',)
+
+    @admin.display(description='Наименование')
+    def directory_name(self, obj: DirectoryVersion) -> str:
+        return obj.directory.name
+    
+    @admin.display(description='Код')
+    def directory_code(self, obj: DirectoryVersion) -> str:
+        return obj.directory.code
+
+
 admin.site.register(Directory, DirectoryAdmin)
-admin.site.register(DirectoryVersion)
+admin.site.register(DirectoryVersion, DirectoryVersionAdmin)
 admin.site.register(DirectoryElement)
