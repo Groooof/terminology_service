@@ -25,8 +25,23 @@ class DirectoryVersion(models.Model):
     class Meta:
         verbose_name = 'Версия справочника'
         verbose_name_plural = 'Версии справочников'
-        ordering = ['directory', 'version']
+        ordering = ['directory__name', 'version']
         unique_together = (('directory', 'version'), ('directory', 'start_date'))
         
     def __str__(self) -> str:
-        return f'{self.id_directory.name} v{self.version}'
+        return f'{self.directory.name} v{self.version}'
+
+
+class DirectoryElement(models.Model):
+    directory_version = models.ForeignKey(DirectoryVersion, models.PROTECT, blank=False, verbose_name='Версия справочника')
+    code = models.CharField(max_length=100, blank=False)
+    value = models.CharField(max_length=300, blank=False)
+    
+    class Meta:
+        verbose_name = 'Элемент справочника'
+        verbose_name_plural = 'Элементы справочников'
+        ordering = ['directory_version__directory__name', 'directory_version__version', 'value']
+        unique_together = (('directory_version', 'code'),)
+        
+    def __str__(self) -> str:
+        return f'[{self.code}]:[{self.value}] ({self.directory_version.directory.name} v{self.directory_version.version})'
