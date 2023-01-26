@@ -1,6 +1,8 @@
 from functools import lru_cache
+from pprint import pprint
 
 from django.contrib import admin
+from django.db import connection
 
 from .models import (
     Directory,
@@ -44,6 +46,19 @@ class DirectoryVersionAdmin(admin.ModelAdmin):
         return obj.directory.code
 
 
+class DirectoryElementAdmin(admin.ModelAdmin):
+    list_display = ('code', 'value', 'directory_name', 'directory_version_str')
+    list_display_links = ('code', 'value')
+
+    @admin.display(description='Наименование справочника')
+    def directory_name(self, obj: DirectoryElement) -> str:
+        return obj.directory_version.directory.name
+    
+    @admin.display(description='Версия справочника')
+    def directory_version_str(self, obj: DirectoryElement) -> str:
+        return obj.directory_version.version
+
+
 admin.site.register(Directory, DirectoryAdmin)
 admin.site.register(DirectoryVersion, DirectoryVersionAdmin)
-admin.site.register(DirectoryElement)
+admin.site.register(DirectoryElement, DirectoryElementAdmin)

@@ -34,8 +34,8 @@ class DirectoryVersion(models.Model):
 
 class DirectoryElement(models.Model):
     directory_version = models.ForeignKey(DirectoryVersion, models.PROTECT, blank=False, verbose_name='Версия справочника')
-    code = models.CharField(max_length=100, blank=False)
-    value = models.CharField(max_length=300, blank=False)
+    code = models.CharField('Код', max_length=100, blank=False)
+    value = models.CharField('Значение', max_length=300, blank=False)
     
     class Meta:
         verbose_name = 'Элемент справочника'
