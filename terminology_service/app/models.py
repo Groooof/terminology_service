@@ -29,7 +29,7 @@ class DirectoryVersion(models.Model):
         unique_together = (('directory', 'version'), ('directory', 'start_date'))
         
     def __str__(self) -> str:
-        return f'{self.directory.name} v{self.version}'
+        return f'{self.directory.name}-v{self.version}'
 
 
 class DirectoryElement(models.Model):
@@ -44,4 +44,4 @@ class DirectoryElement(models.Model):
         unique_together = (('directory_version', 'code'),)
         
     def __str__(self) -> str:
-        return f'[{self.code}]:[{self.value}] ({self.directory_version.directory.name} v{self.directory_version.version})'
+        return f'{self.code}-{self.value}'
