@@ -10,6 +10,8 @@ from . import serializers
 
 
 class RefbooksApiView(APIView):
+    http_method_names = ['get']
+    
     def get(self, request: Request):
         date = request.query_params.get('date', None)
         
@@ -35,6 +37,8 @@ class RefbooksApiView(APIView):
 
 
 class RefbooksElementsApiView(APIView):
+    http_method_names = ['get']
+    
     def get(self, request: Request, id: int):
         version = request.query_params.get('version', None)
         if version is None:
@@ -46,6 +50,8 @@ class RefbooksElementsApiView(APIView):
 
 
 class CheckRefbookElementApiView(APIView):
+    http_method_names = ['get']
+    
     def get(self, request: Request, id: int):
         code = request.query_params.get('code', None)
         value = request.query_params.get('value', None)

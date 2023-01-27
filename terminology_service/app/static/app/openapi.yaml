@@ -1,0 +1,182 @@
+openapi: 3.0.3
+info:
+  title: Сервис терминологии
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000
+  
+paths:
+  /refbooks:
+    get:
+      summary: Получение справочников
+      description:  <b> Получение всех справочников.</b> <br>
+                    Если указана дата, - только тех, в которых имеются 
+                    Версии с Датой начала действия раннее или равной указанной.
+      operationId: refbooks
+      parameters:
+        - in: query
+          name: date
+          required: false
+          description: Дата начала действия в формате ГГГГ-ММ-ДД
+          example: "2023-01-25"
+          schema:
+            type: string
+                        
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefbooksResponse'          
+        '422':
+          description: Request validation error
+
+  /refbooks/{id}/elements:
+    get:
+      summary: Получение элементов справочника
+      description:  <b> Получение элементов справочника с заданным id и версией. </b> <br>
+                    Если версия не указана - возвращаются элементы текущей версии. <br>
+                    Текущей является та версия, дата начала действия которой позже всех остальных версий данного справочника, но не позже текущей даты.
+                    
+      operationId: refbooksElements
+      parameters:
+        - name: id
+          in: path
+          description: Идентификатор справочника
+          required: true
+          example: 1
+          schema:
+            type: string
+
+        - name: version
+          in: query
+          description: Версия справочника
+          required: false
+          example: "1.0"
+          schema:
+            type: string
+            
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefbooksElementsResponse'
+
+  /refbooks/{id}/check_element:
+    get:
+      summary: Валидация элемента
+      description:  Валидация элемента справочника - это проверка на то, что элемент с данным кодом и  значением присутствует в указанной версии справочника. <br>
+        Если не указана - проверяются элементы в текущей версии. <br>
+        Текущей является та версия, дата начала действия которой позже всех остальных версий данного справочника, но не позже текущей даты.
+                    
+      operationId: refbooksChechElements
+      parameters:
+        - name: id
+          in: path
+          description: Идентификатор справочника
+          required: true
+          example: 1
+          schema:
+            type: string
+
+        - name: code
+          in: query
+          description: Код элемента справочника
+          required: true
+          example: J00
+          schema:
+            type: string
+            
+        - name: value
+          in: query
+          description: Значение элемента справочника
+          required: true
+          example: value_1
+          schema:
+            type: string
+            
+        - name: version
+          in: query
+          description: Версия справочника
+          required: false
+          example: "1.0"
+          schema:
+            type: string
+            
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              type: bool
+              example: true
+        '422':
+          description: Request validation error
+
+components:
+  schemas:
+    RefbooksResponse:
+      type: object
+      properties:
+        refbooks:
+          type: array
+          xml:
+            name: refbooks
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/RefbookItem'
+          description: Список найденных справочников
+      required:
+        - refbooks
+      xml:
+        name: refbooks_response
+        
+    RefbookItem:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1
+        code:
+          type: string
+          example: MS1
+        name:
+          type: string
+          example: refbook_1
+      required:
+        - id
+        - code
+        - name
+        
+    RefbooksElementsResponse:
+      type: object
+      properties:
+        elements:
+          type: array
+          xml:
+            name: elements
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/RefbookElementItem'
+          description: Список найденных элеметов справочника
+      required:
+        - elements
+      xml:
+        name: refbooks_elements_response
+        
+    RefbookElementItem:
+      type: object
+      properties:
+        code:
+          type: string
+          example: J00
+        value:
+          type: string
+          example: value_1
+      required:
+        - code
+        - value
