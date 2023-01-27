@@ -5,9 +5,9 @@ from django.contrib import admin
 from django.db import connection
 
 from .models import (
-    Directory,
-    DirectoryVersion,
-    DirectoryElement
+    Refbook,
+    RefbookVersion,
+    RefbookElement
 )
 
 from . import crud
@@ -15,7 +15,7 @@ from . import crud
 # Register your models here.
 
 class AvailableVersionsInline(admin.TabularInline):
-    model = DirectoryVersion
+    model = RefbookVersion
     fields = ('version',)
     readonly_fields = ('version',)
 
@@ -30,21 +30,21 @@ class AvailableVersionsInline(admin.TabularInline):
     
     
 class AddElementsInline(admin.TabularInline):
-    model = DirectoryElement
+    model = RefbookElement
     
 
-class DirectoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'code', 'name', 'latest_version', 'latest_version_start_date')
+class RefbookAdmin(admin.ModelAdmin):
+    list_display = ('id', 'code', 'name', 'current_version', 'current_version_start_date')
     list_display_links = ('id', 'name', 'code')
     inlines = [AvailableVersionsInline]
     
     @admin.display(description='Текущая версия')
-    def latest_version(self, obj: Directory) -> str:
-        return crud.get_latest_directory_version(obj.pk).version
+    def current_version(self, obj: Refbook) -> str:
+        return crud.get_current_refbook_version(obj.pk).version
 
     @admin.display(description='Дата начала действия текущей версии')
-    def latest_version_start_date(self, obj: Directory) -> str:
-        return crud.get_latest_directory_version(obj.pk).start_date
+    def current_version_start_date(self, obj: Refbook) -> str:
+        return crud.get_current_refbook_version(obj.pk).start_date
 
     def get_formsets_with_inlines(self, request, obj=None):
         for inline in self.get_inline_instances(request, obj):
@@ -53,33 +53,33 @@ class DirectoryAdmin(admin.ModelAdmin):
             yield inline.get_formset(request, obj), inline
 
 
-class DirectoryVersionAdmin(admin.ModelAdmin):
-    list_display = ('directory_code', 'directory_name', 'version', 'start_date')
+class RefbookVersionAdmin(admin.ModelAdmin):
+    list_display = ('refbook_code', 'refbook_name', 'version', 'start_date')
     list_display_links = ('version',)
     inlines = [AddElementsInline]
 
     @admin.display(description='Наименование')
-    def directory_name(self, obj: DirectoryVersion) -> str:
-        return obj.directory.name
+    def refbook_name(self, obj: RefbookVersion) -> str:
+        return obj.refbook.name
     
     @admin.display(description='Код')
-    def directory_code(self, obj: DirectoryVersion) -> str:
-        return obj.directory.code
+    def refbook_code(self, obj: RefbookVersion) -> str:
+        return obj.refbook.code
 
 
-class DirectoryElementAdmin(admin.ModelAdmin):
-    list_display = ('code', 'value', 'directory_name', 'directory_version_str')
+class RefbookElementAdmin(admin.ModelAdmin):
+    list_display = ('code', 'value', 'refbook_name', 'refbook_version_str')
     list_display_links = ('code', 'value')
 
     @admin.display(description='Наименование справочника')
-    def directory_name(self, obj: DirectoryElement) -> str:
-        return obj.directory_version.directory.name
+    def refbook_name(self, obj: RefbookElement) -> str:
+        return obj.refbook_version.refbook.name
     
     @admin.display(description='Версия справочника')
-    def directory_version_str(self, obj: DirectoryElement) -> str:
-        return obj.directory_version.version
+    def refbook_version_str(self, obj: RefbookElement) -> str:
+        return obj.refbook_version.version
 
 
-admin.site.register(Directory, DirectoryAdmin)
-admin.site.register(DirectoryVersion, DirectoryVersionAdmin)
-admin.site.register(DirectoryElement, DirectoryElementAdmin)
+admin.site.register(Refbook, RefbookAdmin)
+admin.site.register(RefbookVersion, RefbookVersionAdmin)
+admin.site.register(RefbookElement, RefbookElementAdmin)

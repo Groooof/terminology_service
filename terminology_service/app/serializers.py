@@ -7,7 +7,7 @@ class RefbookItemSerializer(serializers.ModelSerializer):
     id = serializers.CharField()
     
     class Meta:
-        model = models.Directory
+        model = models.Refbook
         fields = ['id', 'code', 'name']
 
 
@@ -17,7 +17,7 @@ class RefbooksResponseSerializer(serializers.Serializer):
 
 class RefbookElementItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.DirectoryElement
+        model = models.RefbookElement
         fields = ['code', 'value']
 
 

@@ -38,7 +38,7 @@ class RefbooksElementsApiView(APIView):
     def get(self, request: Request, id: int):
         version = request.query_params.get('version', None)
         if version is None:
-            version = crud.get_latest_directory_version(id).version
+            version = crud.get_current_refbook_version(id).version
         refbooks_list = crud.get_refbook_elements_for_version(id, version)
         response_data = {'elements': refbooks_list}
         serializer = serializers.RefbooksElementsResponseSerializer(response_data)
@@ -56,7 +56,7 @@ class CheckRefbookElementApiView(APIView):
                             status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         
         if version is None:
-            version = crud.get_latest_directory_version(id).version
+            version = crud.get_latest_refbook_version(id).version
         
         is_exists = crud.check_refbook_element_exists(code, value, version)
         return Response(is_exists)
