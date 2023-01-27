@@ -40,17 +40,12 @@ class DirectoryAdmin(admin.ModelAdmin):
     
     @admin.display(description='Текущая версия')
     def latest_version(self, obj: Directory) -> str:
-        return self._get_latest_version_obj(obj).version
+        return crud.get_latest_directory_version(obj.pk).version
 
     @admin.display(description='Дата начала действия текущей версии')
     def latest_version_start_date(self, obj: Directory) -> str:
-        return self._get_latest_version_obj(obj).start_date
+        return crud.get_latest_directory_version(obj.pk).start_date
 
-    @staticmethod
-    @lru_cache(maxsize=2)
-    def _get_latest_version_obj(obj: Directory) -> DirectoryVersion:
-        return crud.get_latest_directory_version(obj)
-    
     def get_formsets_with_inlines(self, request, obj=None):
         for inline in self.get_inline_instances(request, obj):
             if isinstance(inline, AvailableVersionsInline) and obj is None:
