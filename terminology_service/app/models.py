@@ -18,7 +18,7 @@ class Refbook(models.Model):
 
 
 class RefbookVersion(models.Model):
-    refbook = models.ForeignKey(Refbook, models.PROTECT, blank=False, verbose_name='Справочник')
+    refbook = models.ForeignKey(Refbook, models.CASCADE, blank=False, verbose_name='Справочник')
     version = models.CharField('Версия', max_length=50, blank=False)
     start_date = models.DateField('Дата начала действия', blank=False)
 
@@ -33,7 +33,7 @@ class RefbookVersion(models.Model):
 
 
 class RefbookElement(models.Model):
-    refbook_version = models.ForeignKey(RefbookVersion, models.PROTECT, blank=False, verbose_name='Версия справочника')
+    refbook_version = models.ForeignKey(RefbookVersion, models.CASCADE, blank=False, verbose_name='Версия справочника')
     code = models.CharField('Код', max_length=100, blank=False)
     value = models.CharField('Значение', max_length=300, blank=False)
     
