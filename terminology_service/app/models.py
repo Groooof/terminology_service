@@ -20,7 +20,7 @@ class Refbook(models.Model):
 class RefbookVersion(models.Model):
     refbook = models.ForeignKey(Refbook, models.PROTECT, blank=False, verbose_name='Справочник')
     version = models.CharField('Версия', max_length=50, blank=False)
-    start_date = models.DateField('Дата начала действия', blank=True, null=True)
+    start_date = models.DateField('Дата начала действия', blank=False)
 
     class Meta:
         verbose_name = 'Версия справочника'

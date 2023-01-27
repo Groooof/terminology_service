@@ -1,8 +1,4 @@
-from functools import lru_cache
-from pprint import pprint
-
 from django.contrib import admin
-from django.db import connection
 
 from .models import (
     Refbook,
