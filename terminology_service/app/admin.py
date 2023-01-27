@@ -14,10 +14,29 @@ from . import crud
 
 # Register your models here.
 
+class AvailableVersionsInline(admin.TabularInline):
+    model = DirectoryVersion
+    fields = ('version',)
+    readonly_fields = ('version',)
+
+    def has_add_permission(self, request, obj):
+        return False
+    
+    def has_delete_permission(self, request, obj):
+        return False
+    
+    def has_change_permission(self, request, obj):
+        return False
+    
+    
+class AddElementsInline(admin.TabularInline):
+    model = DirectoryElement
+    
 
 class DirectoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'code', 'name', 'latest_version', 'latest_version_start_date')
     list_display_links = ('id', 'name', 'code')
+    inlines = [AvailableVersionsInline]
     
     @admin.display(description='Текущая версия')
     def latest_version(self, obj: Directory) -> str:
@@ -31,11 +50,18 @@ class DirectoryAdmin(admin.ModelAdmin):
     @lru_cache(maxsize=2)
     def _get_latest_version_obj(obj: Directory) -> DirectoryVersion:
         return crud.get_latest_directory_version(obj)
+    
+    def get_formsets_with_inlines(self, request, obj=None):
+        for inline in self.get_inline_instances(request, obj):
+            if isinstance(inline, AvailableVersionsInline) and obj is None:
+                continue
+            yield inline.get_formset(request, obj), inline
 
 
 class DirectoryVersionAdmin(admin.ModelAdmin):
     list_display = ('directory_code', 'directory_name', 'version', 'start_date')
     list_display_links = ('version',)
+    inlines = [AddElementsInline]
 
     @admin.display(description='Наименование')
     def directory_name(self, obj: DirectoryVersion) -> str:
