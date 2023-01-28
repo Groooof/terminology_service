@@ -73,7 +73,7 @@ class CheckRefbookElementApiView(APIView):
                             status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         
         if version is None:
-            version = crud.get_latest_refbook_version(id).version
+            version = crud.get_current_refbook_version(id).version
         
         is_exists = crud.check_refbook_element_exists(code, value, version)
         return Response(is_exists)
