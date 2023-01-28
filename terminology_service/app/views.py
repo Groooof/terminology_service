@@ -1,4 +1,5 @@
 import datetime as dt
+import typing as tp
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -41,12 +42,22 @@ class RefbooksElementsApiView(APIView):
     
     def get(self, request: Request, id: int):
         version = request.query_params.get('version', None)
-        if version is None:
-            version = crud.get_current_refbook_version(id).version
-        refbooks_list = crud.get_refbook_elements_for_version(id, version)
-        response_data = {'elements': refbooks_list}
+        refbook_elements_list = self._get_refbook_elements_list(id, version)
+        response_data = {'elements': refbook_elements_list}
         serializer = serializers.RefbooksElementsResponseSerializer(response_data)
         return Response(serializer.data)
+    
+    @staticmethod
+    def _get_refbook_elements_list(id: int, version: tp.Optional[str]):
+        if version is not None:
+            return crud.get_refbook_elements_for_version(id, version)
+            
+        have_any_versions = crud.check_any_refbook_version_exists(id)
+        if not have_any_versions:
+            return []
+        
+        version = crud.get_current_refbook_version(id).version
+        return crud.get_refbook_elements_for_version(id, version)
 
 
 class CheckRefbookElementApiView(APIView):

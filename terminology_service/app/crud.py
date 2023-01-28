@@ -10,7 +10,11 @@ from .models import (
 )
 
 
-def get_current_refbook_version(refbook_id: Refbook) -> RefbookVersion:
+def check_any_refbook_version_exists(refbook_id: int) -> bool:
+    return RefbookVersion.objects.filter(refbook_id=refbook_id).exists()
+
+
+def get_current_refbook_version(refbook_id: int) -> RefbookVersion:
     current_date = dt.datetime.now()
     return RefbookVersion.objects.filter(
         models.Q(refbook_id=refbook_id)
