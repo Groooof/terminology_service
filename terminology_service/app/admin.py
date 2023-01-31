@@ -10,19 +10,9 @@ from . import crud
 
 # Register your models here.
 
+
 class AvailableVersionsInline(admin.TabularInline):
     model = RefbookVersion
-    fields = ('version',)
-    readonly_fields = ('version',)
-
-    def has_add_permission(self, request, obj):
-        return False
-    
-    def has_delete_permission(self, request, obj):
-        return False
-    
-    def has_change_permission(self, request, obj):
-        return False
     
     
 class AddElementsInline(admin.TabularInline):
@@ -41,12 +31,6 @@ class RefbookAdmin(admin.ModelAdmin):
     @admin.display(description='Дата начала действия текущей версии')
     def current_version_start_date(self, obj: Refbook) -> str:
         return crud.get_current_refbook_version(obj.pk).start_date
-
-    def get_formsets_with_inlines(self, request, obj=None):
-        for inline in self.get_inline_instances(request, obj):
-            if isinstance(inline, AvailableVersionsInline) and obj is None:
-                continue
-            yield inline.get_formset(request, obj), inline
 
 
 class RefbookVersionAdmin(admin.ModelAdmin):
