@@ -14,7 +14,7 @@ class Refbook(models.Model):
         ordering = ['name']
 
     def __str__(self) -> str:
-        return f'{self.name}'
+        return f'[{self.code}]-{self.name}'
 
 
 class RefbookVersion(models.Model):
